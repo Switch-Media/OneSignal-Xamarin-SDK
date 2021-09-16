@@ -7,7 +7,6 @@ using Com.OneSignal.Abstractions;
 using OSInFocusDisplayOption = Com.OneSignal.Abstractions.OSInFocusDisplayOption;
 using OSNotification = Com.OneSignal.Abstractions.OSNotification;
 using OSNotificationAction = Com.OneSignal.Abstractions.OSNotificationAction;
-using OSNotificationPayload = Com.OneSignal.Abstractions.OSNotificationPayload;
 using OSNotificationOpenedResult = Com.OneSignal.Abstractions.OSNotificationOpenedResult;
 using OSInAppMessageAction = Com.OneSignal.Abstractions.OSInAppMessageAction;
 
@@ -31,7 +30,7 @@ namespace Com.OneSignal
          var openresult = new OSNotificationOpenedResult();
          openresult.action = new OSNotificationAction();
          iOS.OSNotificationAction action = result.Action;
-         openresult.action.actionID = action.ActionID;
+         openresult.action.actionId = action.ActionId;
          openresult.action.type = (OSNotificationAction.ActionType)(int)action.Type;
 
          openresult.notification = OSNotificationToXam(result.Notification);
@@ -42,40 +41,37 @@ namespace Com.OneSignal
       private OSNotification OSNotificationToXam(iOS.OSNotification notif)
       {
          var notification = new OSNotification();
-         notification.displayType = (OSNotification.DisplayType)notif.DisplayType;
-         notification.shown = notif.Shown;
-         notification.silentNotification = notif.SilentNotification;
-         notification.isAppInFocus = notif.IsAppInFocus;
-         notification.payload = new OSNotificationPayload();
-
-
-         notification.payload.actionButtons = new List<Dictionary<string, object>>();
-         if (notif.Payload.ActionButtons != null)
+         //notification.displayType = (OSNotification.DisplayType)notif.DisplayType;
+         //notification.shown = notif.Shown;
+         //notification.silentNotification = notif.SilentNotification;
+         //notification.isAppInFocus = notif.IsAppInFocus;
+         notification.actionButtonsDictionary = new List<Dictionary<string, object>>();
+         if (notif.ActionButtons != null)
          {
-            for (int i = 0; i < (int)notif.Payload.ActionButtons.Count; ++i)
+            for (int i = 0; i < (int)notif.ActionButtons.Count; ++i)
             {
-               NSDictionary element = notif.Payload.ActionButtons.GetItem<NSDictionary>((uint)i);
-               notification.payload.actionButtons.Add(NSDictToPureDict(element));
+               NSDictionary element = notif.ActionButtons.GetItem<NSDictionary>((uint)i);
+               notification.actionButtonsDictionary.Add(NSDictToPureDict(element));
             }
          }
 
-         notification.payload.additionalData = new Dictionary<string, object>();
-         if (notif.Payload.AdditionalData != null)
+         notification.additionalData = new Dictionary<string, object>();
+         if (notif.AdditionalData != null)
          {
-            foreach (KeyValuePair<NSObject, NSObject> element in notif.Payload.AdditionalData)
+            foreach (KeyValuePair<NSObject, NSObject> element in notif.AdditionalData)
             {
-               notification.payload.additionalData.Add((NSString)element.Key, element.Value);
+               notification.additionalData.Add((NSString)element.Key, element.Value);
             }
          }
 
-         notification.payload.badge = (int)notif.Payload.Badge;
-         notification.payload.body = notif.Payload.Body;
-         notification.payload.contentAvailable = notif.Payload.ContentAvailable;
-         notification.payload.launchURL = notif.Payload.LaunchURL;
-         notification.payload.notificationID = notif.Payload.NotificationID;
-         notification.payload.sound = notif.Payload.Sound;
-         notification.payload.subtitle = notif.Payload.Subtitle;
-         notification.payload.title = notif.Payload.Title;
+         notification.badge = (int)notif.Badge;
+         notification.body = notif.Body;
+         notification.contentAvailable = notif.ContentAvailable;
+         notification.launchURL = notif.LaunchURL;
+         notification.notificationId = notif.NotificationId;
+         notification.sound = notif.Sound;
+         notification.subtitle = notif.Subtitle;
+         notification.title = notif.Title;
 
          return notification;
       }
@@ -92,36 +88,36 @@ namespace Com.OneSignal
       }
 
       // Init - Only required method you call to setup OneSignal to receive push notifications.
-      public override void InitPlatform()
-      {
-         //extract settings
-         bool autoPrompt = true, inAppLaunchURL = true;
+      //public override void InitPlatform()
+      //{
+      //   //extract settings
+      //   bool autoPrompt = true, inAppLaunchURL = true;
 
-         if (builder.iOSSettings != null)
-         {
-            if (builder.iOSSettings.ContainsKey(IOSSettings.kOSSettingsKeyAutoPrompt))
-               autoPrompt = builder.iOSSettings[IOSSettings.kOSSettingsKeyAutoPrompt];
-            if (builder.iOSSettings.ContainsKey(IOSSettings.kOSSettingsKeyInAppLaunchURL))
-               inAppLaunchURL = builder.iOSSettings[IOSSettings.kOSSettingsKeyInAppLaunchURL];
-         }
-         Init(builder.mAppId, autoPrompt, inAppLaunchURL, builder.displayOption, logLevel, visualLogLevel);
-      }
+      //   if (builder.iOSSettings != null)
+      //   {
+      //      if (builder.iOSSettings.ContainsKey(IOSSettings.kOSSettingsKeyAutoPrompt))
+      //         autoPrompt = builder.iOSSettings[IOSSettings.kOSSettingsKeyAutoPrompt];
+      //      if (builder.iOSSettings.ContainsKey(IOSSettings.kOSSettingsKeyInAppLaunchURL))
+      //         inAppLaunchURL = builder.iOSSettings[IOSSettings.kOSSettingsKeyInAppLaunchURL];
+      //   }
+      //   Init(builder.mAppId, autoPrompt, inAppLaunchURL, builder.displayOption, logLevel, visualLogLevel);
+      //}
 
-      public void Init(string appId, bool autoPrompt, bool inAppLaunchURLs, OSInFocusDisplayOption displayOption, LOG_LEVEL logLevel, LOG_LEVEL visualLevel)
-      {
-         var convertedLogLevel = (iOS.OneSLogLevel)((int)logLevel);
-         var convertedVisualLevel = (iOS.OneSLogLevel)((int)visualLevel);
+      //public void Init(string appId, bool autoPrompt, bool inAppLaunchURLs, OSInFocusDisplayOption displayOption, LOG_LEVEL logLevel, LOG_LEVEL visualLevel)
+      //{
+      //   var convertedLogLevel = (iOS.OneSLogLevel)((int)logLevel);
+      //   var convertedVisualLevel = (iOS.OneSLogLevel)((int)visualLevel);
 
-         iOS.OneSignal.SetLogLevel(convertedLogLevel, convertedVisualLevel);
-         var dict = new NSDictionary("kOSSettingsKeyInAppLaunchURL", new NSNumber(inAppLaunchURLs),
-                                                "kOSSettingsKeyAutoPrompt", new NSNumber(autoPrompt),
-                                                "kOSSettingsKeyInFocusDisplayOption", new NSNumber((int)displayOption)
-                                               );
-         iOS.OneSignal.SetMSDKType("xam");
-         iOS.OneSignal.SetInAppMessageClickHandler(InAppMessageClickActionHandler);
-         iOS.OneSignal.InitWithLaunchOptions(new NSDictionary(), appId, NotificationReceivedHandler, NotificationOpenedHandler, dict);
+      //   iOS.OneSignal.SetLogLevel(convertedLogLevel, convertedVisualLevel);
+      //   var dict = new NSDictionary("kOSSettingsKeyInAppLaunchURL", new NSNumber(inAppLaunchURLs),
+      //                                          "kOSSettingsKeyAutoPrompt", new NSNumber(autoPrompt),
+      //                                          "kOSSettingsKeyInFocusDisplayOption", new NSNumber((int)displayOption)
+      //                                         );
+      //   iOS.OneSignal.SetMSDKType("xam");
+      //   iOS.OneSignal.SetInAppMessageClickHandler(InAppMessageClickActionHandler);
+      //   iOS.OneSignal.InitWithLaunchOptions(new NSDictionary(), appId, NotificationReceivedHandler, NotificationOpenedHandler, dict);
 
-      }
+      //}
 
       public override void RegisterForPushNotifications()
       {
@@ -171,17 +167,17 @@ namespace Com.OneSignal
          Debug.WriteLine("UnsubscribeWhenNotificationsAreDisabled() is an android-only function, and is not implemented in iOS.");
       }
 
-		public override void IdsAvailable(IdsAvailableCallback idsAvailable)
-		{
-			if (idsAvailable == null)
-				throw new ArgumentNullException(nameof(idsAvailable));
-			iOS.OneSignal.IdsAvailable((playerId, pushToken) => idsAvailable(playerId, pushToken));
-		}
+		//public override void IdsAvailable(IdsAvailableCallback idsAvailable)
+		//{
+		//	if (idsAvailable == null)
+		//		throw new ArgumentNullException(nameof(idsAvailable));
+		//	iOS.OneSignal.IdsAvailable((playerId, pushToken) => idsAvailable(playerId, pushToken));
+		//}
 
-		public override void SetSubscription(bool enable)
-      {
-         iOS.OneSignal.SetSubscription(enable);
-      }
+		//public override void SetSubscription(bool enable)
+  //    {
+  //       iOS.OneSignal.SetSubscription(enable);
+  //    }
 
       public override void PostNotification(Dictionary<string, object> data, OnPostNotificationSuccess success, OnPostNotificationFailure failure)
       {
@@ -310,12 +306,18 @@ namespace Com.OneSignal
 
       public void NotificationOpenedHandler(iOS.OSNotificationOpenedResult result)
       {
-         OnPushNotificationOpened(OSNotificationOpenedResultToXam(result));
+         if (builder._notificationOpenedDelegate != null)
+         {
+            builder._notificationOpenedDelegate(OSNotificationOpenedResultToXam(result));
+         }
       }
 
       public void NotificationReceivedHandler(iOS.OSNotification notification)
       {
-         OnPushNotificationReceived(OSNotificationToXam(notification));
+         if (builder._notificationReceivedDelegate != null)
+         {
+            builder._notificationReceivedDelegate(OSNotificationToXam(notification));
+         }
       }
 
       public void InAppMessageClickActionHandler(iOS.OSInAppMessageAction action)
@@ -323,11 +325,11 @@ namespace Com.OneSignal
          OnInAppMessageClicked(OSInAppMessageClickActionToXam(action));
       }
 
-      [Obsolete("SyncHashedEmail has been deprecated. Please use SetEmail() instead.")]
-      public override void SyncHashedEmail(string email)
-      {
-         iOS.OneSignal.SyncHashedEmail(email);
-      }
+      //[Obsolete("SyncHashedEmail has been deprecated. Please use SetEmail() instead.")]
+      //public override void SyncHashedEmail(string email)
+      //{
+      //   iOS.OneSignal.SyncHashedEmail(email);
+      //}
 
       public override void PromptLocation()
       {
@@ -451,6 +453,24 @@ namespace Com.OneSignal
          }
 
          return "DISABLED";
+      }
+
+      public override void InitWithContext()
+      {
+         iOS.OneSignal.InitWithLaunchOptions(new NSDictionary());
+         iOS.OneSignal.SetInAppMessageClickHandler(InAppMessageClickActionHandler);
+         iOS.OneSignal.SetNotificationOpenedHandler(NotificationOpenedHandler);
+      }
+
+      public override void setAppId(string appID)
+      {
+         InitWithContext();
+         iOS.OneSignal.SetAppId(appID);
+      }
+
+      public override void setLanguage(string language)
+      {
+         iOS.OneSignal.SetLanguage(language);
       }
    }
 }

@@ -2,26 +2,26 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>Com.OneSignal</id>
-        <version>3.10.6</version>
+        <version>4.0.0-sm</version>
         <title>OneSignal SDK for Xamarin</title>
-        <authors>OneSignal, Martijn van Dijk</authors>
+        <authors>OneSignal, Martijn van Dijk, Dorothy Tam (dtam@switch.tv)</authors>
         <owners>OneSignal</owners>
         <licenseUrl>https://github.com/OneSignal/OneSignal-Xamarin-SDK/blob/master/LICENSE</licenseUrl>
         <projectUrl>https://github.com/OneSignal/OneSignal-Xamarin-SDK</projectUrl>
         <iconUrl>https://github.com/OneSignal/OneSignal-Xamarin-SDK/blob/master/nuget_icon.png?raw=true</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>OneSignal for Xamarin</description>
+        <description>OneSignal for Xamarin - Android SDK 4.6.0, iOS SDK 3.8.0</description>
         <summary>OneSignal is a free push notification service for mobile apps. This plugin makes it easy to integrate your Xamarin app with OneSignal</summary>
         <tags>xamarin, monodroid, C#, OneSignal, push</tags>
         <dependencies>
-            <group targetFramework="MonoAndroid">
-                <dependency id="Xamarin.Android.Support.v4" version="28.0.0.3" />
-                <dependency id="Xamarin.Android.Support.v7.CardView" version="28.0.0.3" />
-                <dependency id="Xamarin.Android.Support.CustomTabs" version="28.0.0.3" />
+            <group targetFramework="MonoAndroid10">
+                <dependency id="Xamarin.AndroidX.Legacy.Support.V4" version="1.0.0.8" />
+                <dependency id="Xamarin.AndroidX.AppCompat" version="1.3.1.1" />
+                <dependency id="Xamarin.Kotlin.StdLib" version="1.4.32" />
+                <dependency id="Xamarin.Kotlin.StdLib.Jdk8" version="1.4.32" />
                 <!-- This does the same thing as Google's Jetifier -->
                 <dependency id="Xamarin.AndroidX.Migration" version="1.0.8" />
-                <dependency id="Xamarin.GooglePlayServices.Ads.Identifier" version="71.1600.0" />
-                <dependency id="Xamarin.Firebase.Messaging" version="71.1740.0" />
+                <dependency id="Xamarin.Firebase.Messaging" version="122.0.0" />
             </group>
             <group targetFramework="netstandard1.0">
                 <dependency id="NETStandard.Library" version="1.6.1" />

@@ -9,7 +9,7 @@ namespace Com.OneSignal.Abstractions {
          ActionTaken
       }
 
-      public string actionID;
+      public string actionId;
       public ActionType type;
    }
 }

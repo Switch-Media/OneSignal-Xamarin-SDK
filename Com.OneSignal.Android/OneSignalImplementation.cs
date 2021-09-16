@@ -7,6 +7,15 @@ namespace Com.OneSignal
 {
    public class OneSignalImplementation : OneSignalShared, IOneSignal
    {
+      // Called from the native SDK - Called when a push notification is opened by the user
+      public void OnPushNotificationOpened(OSNotificationOpenedResult result)
+      {
+         if (builder._notificationOpenedDelegate != null)
+         {
+            builder._notificationOpenedDelegate(result);
+         }
+      }
+
       //public void Init(string appid, OSInFocusDisplayOption displayOption, LOG_LEVEL logLevel, LOG_LEVEL visualLevel)
       //{
       //   SetLogLevel(logLevel, visualLevel);
@@ -32,6 +41,8 @@ namespace Com.OneSignal
 
       public override void InitWithContext() {
          Android.OneSignal.InitWithContext(Application.Context);
+         Android.OneSignal.SetNotificationOpenedHandler(new NotificationOpenedHandler());
+         Android.OneSignal.SetInAppMessageClickHandler(new InAppMessageClickHandler());
       }
 
       //// Init - Only required method you call to setup OneSignal to receive push notifications.
